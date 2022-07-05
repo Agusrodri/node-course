@@ -1,9 +1,11 @@
 const express = require("express");
+const cors = require("cors");
 
 class Server {
   constructor() {
     this.app = express();
     this.port = process.env.PORT;
+    this.usuariosPath = "/api/usuarios";
 
     //Middlewares
     this.middlewares();
@@ -16,33 +18,19 @@ class Server {
   }
 
   middlewares() {
+    //cors: sirve para proteger nuestra api de manera superficial. Chrome y otros navegadores lo requieren
+
+    this.app.use(cors());
+
+    //Lectura y parseo del body: cualquier info que venga de los métodos GPPD se maneja con este middleware
+    this.app.use(express.json());
+
+    //Directorio público
     this.app.use(express.static("public"));
   }
 
   routes() {
-    this.app.get("/api", function (req, res) {
-      res.json({
-        msg: "get API",
-      });
-    });
-
-    this.app.put("/api", function (req, res) {
-      res.json({
-        msg: "put API",
-      });
-    });
-
-    this.app.post("/api", function (req, res) {
-      res.json({
-        msg: "post API",
-      });
-    });
-
-    this.app.delete("/api", function (req, res) {
-      res.json({
-        msg: "delete API",
-      });
-    });
+    this.app.use(this.usuariosPath, require("../routes/usuarios"));
   }
 
   listen() {
